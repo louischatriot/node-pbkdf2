@@ -5,12 +5,12 @@ var crypto = require('crypto');
  * Constructor
  * @param {Number} options.iterations Number of iterations to be used when hashing new passwords
  * @param {Number} options.saltLength Length of the salt to use
- * @param {Number} options.encryptedLength Length of the stored encrypted password
+ * @param {Number} options.derivedKeyLength Length of the stored encrypted password
  */
 function NodePbkdf2 (options) {
   this.iterations = options.iterations || 10000;
   this.saltLength = options.saltLength || 12;
-  this.encryptedLength = options.encryptedLength || 30;
+  this.derivedKeyLength = options.derivedKeyLength || 30;
 }
 
 
@@ -44,10 +44,10 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
   var self = this
     , randomSalt = NodePbkdf2.uid(self.saltLength);
 
-  crypto.pbkdf2(password, randomSalt, self.iterations, self.encryptedLength, function (err, derivedKey) {
+  crypto.pbkdf2(password, randomSalt, self.iterations, self.derivedKeyLength, function (err, derivedKey) {
     if (err) { return callback(err); }
 
-    return callback(null, JSON.stringify({ salt: randomSalt, iterations: self.iterations, derivedKey: derivedKey }));
+    return callback(null, JSON.stringify({ salt: randomSalt, iterations: self.iterations, derivedKeyLength: self.derivedKeyLength, derivedKey: new Buffer(derivedKey).toString('base64') }));
   });
 };
 
@@ -68,13 +68,13 @@ NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, call
    return callback('Unexpected encrypted password format');
   }
 
-  if (!encryptedPassword.salt || !encryptedPassword.derivedKey || !encryptedPassword.iterations) { return callback("encryptedPassword doesn't have the right format"); }
+  if (!encryptedPassword.salt || !encryptedPassword.derivedKey || !encryptedPassword.iterations || !encryptedPassword.derivedKeyLength) { return callback("encryptedPassword doesn't have the right format"); }
 
   // Use the encrypted password's parameter to hash the candidate password
-  crypto.pbkdf2(password, encryptedPassword.salt, encryptedPassword.iterations, encryptedPassword.derivedKey.length, function (err, derivedKey) {
+  crypto.pbkdf2(password, encryptedPassword.salt, encryptedPassword.iterations, encryptedPassword.derivedKeyLength, function (err, derivedKey) {
     if (err) { return callback(err); }
 
-    if (derivedKey === encryptedPassword.derivedKey) {
+    if (new Buffer(derivedKey).toString('base64') === encryptedPassword.derivedKey) {
       return callback(null, true);
     } else {
       return callback(null, false);
