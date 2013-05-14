@@ -8,7 +8,7 @@
   "contributors": [
     "Louis Chatriot"
   ],
-  "description": "Wrapper around pbkdf2 to securely hash and check passwords, abstracting the API change between node v0.8 and v0.10",
+  "description": "Wrapper around pbkdf2 to securely and hash and check passwords in a future-proof manner, abstracting the API change between node v0.8 and v0.10",
   "keywords": [
     "password",
     "secure",

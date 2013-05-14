@@ -42,7 +42,7 @@ NodePbkdf2.uid = function (len) {
  */
 NodePbkdf2.prototype.encryptPassword = function (password, callback) {
   var self = this
-    , randomSalt = uid(self.saltLength);
+    , randomSalt = NodePbkdf2.uid(self.saltLength);
 
   crypto.pbkdf2(password, randomSalt, self.iterations, self.encryptedLength, function (err, derivedKey) {
     if (err) { return callback(err); }
