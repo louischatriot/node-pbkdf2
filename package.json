@@ -1,0 +1,31 @@
+{
+  "name": "node-pbkdf2",
+  "version": "0.1.0",
+  "author": {
+    "name": "Louis Chatriot",
+    "email": "louis.chatriot@gmail.com"
+  },
+  "contributors": [
+    "Louis Chatriot"
+  ],
+  "description": "Wrapper around pbkdf2 to securely hash and check passwords, abstracting the API change between node v0.8 and v0.10",
+  "keywords": [
+    "password",
+    "secure",
+    "pbkdf2",
+    "hash"
+  ],
+  "homepage": "https://github.com/louischatriot/node-pbkdf2",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:louischatriot/node-pbkdf2.git"
+  },
+  "devDependencies": {
+    "chai": "1.0.x",
+    "mocha": "1.4.x",
+    "request": "2.9.x",
+    "sinon": "1.3.x"
+  },
+  "main": "index",
+  "licence": "MIT"
+}
