@@ -31,8 +31,10 @@ describe('Custom utils', function () {
       // Generate two encrypted passwords from the same password
       hasher.encryptPassword(password, function (err, e1) {
         if (err) { return done(err.toString()); }
+        e1 = JSON.parse(e1);   // Get testable object
         hasher.encryptPassword(password, function (err, e2) {
           if (err) { return done(err.toString()); }
+          e2 = JSON.parse(e2);   // Get testable object
 
           // Salt length as specified in the hasher options
           e1.salt.length.should.equal(hasher.saltLength);
@@ -95,23 +97,25 @@ describe('Custom utils', function () {
         , hasher2 = new NodePbkdf2(options2)
         ;
 
-      hasher.encryptPassword(password, function (err, e1) {
+      hasher.encryptPassword(password, function (err, _e1) {
+        var e1 = JSON.parse(_e1);   // Get testable object
         e1.salt.length.should.equal(12);
         e1.derivedKey.length.should.equal(30);
         e1.iterations.should.equal(10000);
 
         // Use new and stronger password hasher
-        hasher2.encryptPassword(password, function (err, e2) {
+        hasher2.encryptPassword(password, function (err, _e2) {
+          var e2 = JSON.parse(_e2);   // Get testable object
           e2.salt.length.should.equal(24);
           e2.derivedKey.length.should.equal(40);
           e2.iterations.should.equal(20000);
 
           // We can still check against the password encrypted with the former method as well as the new method
-          hasher.checkPassword(password, e1, function (err, ok) {
+          hasher.checkPassword(password, _e1, function (err, ok) {
             if (err) { return done(err.toString()); }
             ok.should.equal(true);
 
-            hasher.checkPassword(password, e2, function (err, ok) {
+            hasher.checkPassword(password, _e2, function (err, ok) {
               if (err) { return done(err.toString()); }
               ok.should.equal(true);
 
