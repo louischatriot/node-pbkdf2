@@ -85,6 +85,7 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
 NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, callback) {
   var self = this;
 
+  console.log(encryptedPassword);
   encryptedPassword = NodePbkdf2.deserializeEncryptedPassword(encryptedPassword);
 
   if (!encryptedPassword.salt || !encryptedPassword.derivedKey || !encryptedPassword.iterations || !encryptedPassword.derivedKeyLength) { return callback("encryptedPassword doesn't have the right format"); }
