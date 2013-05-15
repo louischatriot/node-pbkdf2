@@ -30,7 +30,7 @@ hasher('supersecret', function (err, encryptedPassword) {
 
 // Check a given password against an encrypted one
 hasher('supersecret', encryptedPassword, function (err, passwordIsCorrect) {
-  // passwordIsCorrect is true
+  // You can guess what information passwordIsCorrect holds easily :)
 });
 ```
 
