@@ -1,11 +1,11 @@
 node-pbkdf2
 ===========
 
-Wrapper to hash and check password with crypto's built-in pbkdf2.
+Wrapper to hash and check password with Node's crypto module's built-in pbkdf2.
 
 It abstracts the API change between Node v0.8 and v0.10, you can begin using this module with one of the versions and it will also work on the other.
 
-It is future-proof, meaning that you can change the parameters to increase the strength of encryption and it will still be able to check against password encrypted with the old method.
+It is future-proof, meaning that you can change the parameters to arbitrarily increase the strength of new password encryption and it will still be able to check against passwords encrypted with the old method.
 
 ```javascript
 // Install it
@@ -29,3 +29,7 @@ hasher('supersecret', encryptedPassword, function (err, passwordIsCorrect) {
 });
 ```
 
+
+## License
+MIT, do whatever you want with the code, just leave this message here  
+(c) 2013 Louis Chatriot (louis@tldr.io)
