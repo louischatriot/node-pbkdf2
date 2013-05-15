@@ -20,8 +20,6 @@ function NodePbkdf2 (options) {
  * Generates a random string of length len
  */
 NodePbkdf2.uid = function (len) {
-  return "aaaaa";
-
   return crypto.randomBytes(len)
     .toString('base64')
     .slice(0, len);
@@ -97,7 +95,7 @@ NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, call
   crypto.pbkdf2(password, encryptedPassword.salt, encryptedPassword.iterations, encryptedPassword.derivedKeyLength, function (err, derivedKey) {
     if (err) { return callback(err); }
 
-    if (new Buffer(derivedKey).toString('base64') === encryptedPassword.derivedKey) {
+    if (new Buffer(derivedKey, 'binary').toString('base64') === encryptedPassword.derivedKey) {
       return callback(null, true);
     } else {
       return callback(null, false);
