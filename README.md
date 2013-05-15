@@ -15,6 +15,10 @@ npm install node-pbkdf2
 // Run tests (dev dependencies need to be installed)
 make test
 
+// You can also test it works across the API change between Node v0.8 and v0.10
+// You need to have nvm, node v0.8 and node v0.10 for this test
+make testVersionSwitch
+
 // Create a new password hasher with standard strength parameters
 var NodePbkdf2 = require('node-pbkdf2')
   , hasher = new NodePbkdf2({ iterations: 10000, saltLength: 12, derivedKeyLength: 30 });
