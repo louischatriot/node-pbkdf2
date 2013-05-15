@@ -15,21 +15,42 @@ function NodePbkdf2 (options) {
 
 
 /**
- * Generates a random alphanumerical string of length len
+ * Generates a random string of length len
  */
 NodePbkdf2.uid = function (len) {
-  var randomString = crypto.randomBytes(Math.max(8, len * 2))
+  return crypto.randomBytes(len)
     .toString('base64')
-    .replace(/[^a-zA-Z0-9]/g, '')
     .slice(0, len);
+};
 
-  // If randomString is not of length len, retry
-  // After tests, it turns out the probability of a retry is less than 1/1,000,000 so no risk of a too long recursion
-  if (randomString.length === len) {
-    return randomString;
-  } else {
-    return NodePbkdf2.uid(len);
-  }
+
+/**
+ * Serialize a password object containing all the information needed to check a password into a string
+ * The info is salt, derivedKey, derivedKey length and number of iterations
+ */
+NodePbkdf2.serializeEncryptedPassword = function (encryptedPassword) {
+  return encryptedPassword.salt + "::" +
+         encryptedPassword.derivedKey + "::" +
+         encryptedPassword.derivedKeyLength + "::" +
+         encryptedPassword.iterations;
+};
+
+
+/**
+ * Deserialize a string into a password object
+ * The info is salt, derivedKey, derivedKey length and number of iterations
+ */
+NodePbkdf2.deserializeEncryptedPassword = function (encryptedPassword) {
+  var res = {}
+    , items = encryptedPassword.split('::')
+    ;
+
+  res.salt = items[0];
+  res.derivedKey = items[1];
+  res.derivedKeyLength = parseInt(items[2], 10);
+  res.iterations = parseInt(items[3], 10);
+
+  return res;
 };
 
 
@@ -47,7 +68,10 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
   crypto.pbkdf2(password, randomSalt, self.iterations, self.derivedKeyLength, function (err, derivedKey) {
     if (err) { return callback(err); }
 
-    return callback(null, JSON.stringify({ salt: randomSalt, iterations: self.iterations, derivedKeyLength: self.derivedKeyLength, derivedKey: new Buffer(derivedKey).toString('base64') }));
+    return callback(null, NodePbkdf2.serializeEncryptedPassword({ salt: randomSalt
+                                                                , iterations: self.iterations
+                                                                , derivedKeyLength: self.derivedKeyLength
+                                                                , derivedKey: new Buffer(derivedKey).toString('base64') }));
   });
 };
 
@@ -59,14 +83,9 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
  * @param {Function} callback Signature: err, true/false
  */
 NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, callback) {
-  var self = this
-    , encryptedPassword;
+  var self = this;
 
-  try {
-    encryptedPassword = JSON.parse(encryptedPassword);
-  } catch (e) {
-   return callback('Unexpected encrypted password format');
-  }
+  encryptedPassword = NodePbkdf2.deserializeEncryptedPassword(encryptedPassword);
 
   if (!encryptedPassword.salt || !encryptedPassword.derivedKey || !encryptedPassword.iterations || !encryptedPassword.derivedKeyLength) { return callback("encryptedPassword doesn't have the right format"); }
 

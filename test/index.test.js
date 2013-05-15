@@ -20,6 +20,25 @@ describe('Custom utils', function () {
   });   // ==== End of '#uid' ==== //
 
 
+  describe('Serialization, deserialization', function () {
+
+    it('Can serialize an encrypted password and retrieve it after deserialization', function () {
+      var obj = { salt: 'erwrw/+99', derivedKey: 'qzeqzr++p//r', derivedKeyLength: 12, iterations: 1000 };
+
+      obj = NodePbkdf2.serializeEncryptedPassword(obj);
+      (typeof obj).should.equal('string');
+
+      obj = NodePbkdf2.deserializeEncryptedPassword(obj);
+      Object.keys(obj).length.should.equal(4);
+      obj.salt.should.equal('erwrw/+99');
+      obj.derivedKey.should.equal('qzeqzr++p//r');
+      obj.derivedKeyLength.should.equal(12);
+      obj.iterations.should.equal(1000);
+    });
+
+  });   // ==== End of 'Serialization, deserialization' ==== //
+
+
   describe('Password encryption', function () {
 
     it('Encrypts a password with its uniquely generated salt, preventing rainbow tables attacks', function (done) {
@@ -31,10 +50,10 @@ describe('Custom utils', function () {
       // Generate two encrypted passwords from the same password
       hasher.encryptPassword(password, function (err, e1) {
         if (err) { return done(err.toString()); }
-        e1 = JSON.parse(e1);   // Get testable object
+        e1 = NodePbkdf2.deserializeEncryptedPassword(e1);
         hasher.encryptPassword(password, function (err, e2) {
           if (err) { return done(err.toString()); }
-          e2 = JSON.parse(e2);   // Get testable object
+          e2 = NodePbkdf2.deserializeEncryptedPassword(e2);
 
           // Salt length as specified in the hasher options
           e1.salt.length.should.equal(hasher.saltLength);
@@ -94,13 +113,13 @@ describe('Custom utils', function () {
         ;
 
       hasher.encryptPassword(password, function (err, _e1) {
-        var e1 = JSON.parse(_e1);   // Get testable object
+        var e1 = NodePbkdf2.deserializeEncryptedPassword(_e1);
         e1.salt.length.should.equal(12);
         e1.iterations.should.equal(10000);
 
         // Use new and stronger password hasher
         hasher2.encryptPassword(password, function (err, _e2) {
-          var e2 = JSON.parse(_e2);   // Get testable object
+          var e2 = NodePbkdf2.deserializeEncryptedPassword(_e2);
           e2.salt.length.should.equal(24);
           e2.iterations.should.equal(20000);
 
