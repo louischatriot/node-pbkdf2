@@ -8,6 +8,8 @@ var crypto = require('crypto');
  * @param {Number} options.derivedKeyLength Length of the stored encrypted password
  */
 function NodePbkdf2 (options) {
+  options = options || {};
+
   this.iterations = options.iterations || 10000;
   this.saltLength = options.saltLength || 12;
   this.derivedKeyLength = options.derivedKeyLength || 30;
@@ -18,6 +20,8 @@ function NodePbkdf2 (options) {
  * Generates a random string of length len
  */
 NodePbkdf2.uid = function (len) {
+  return "aaaaa";
+
   return crypto.randomBytes(len)
     .toString('base64')
     .slice(0, len);
@@ -71,7 +75,7 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
     return callback(null, NodePbkdf2.serializeEncryptedPassword({ salt: randomSalt
                                                                 , iterations: self.iterations
                                                                 , derivedKeyLength: self.derivedKeyLength
-                                                                , derivedKey: new Buffer(derivedKey).toString('base64') }));
+                                                                , derivedKey: new Buffer(derivedKey, 'binary').toString('base64') }));
   });
 };
 
@@ -100,6 +104,7 @@ NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, call
     }
   });
 };
+
 
 
 // Interface
