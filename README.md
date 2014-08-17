@@ -1,6 +1,8 @@
 node-pbkdf2
 ===========
 
+**IMPORTANT: this library is not maintained anymore, please don't submit anymore pull requests except for bugfixes**
+
 Wrapper to hash and check password with Node's crypto module's built-in pbkdf2.
 
 It abstracts the API change between Node v0.8 and v0.10, you can begin
