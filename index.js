@@ -67,7 +67,7 @@ NodePbkdf2.prototype.encryptPassword = function (password, callback) {
   var self = this
     , randomSalt = NodePbkdf2.uid(self.saltLength);
 
-  crypto.pbkdf2(password, randomSalt, self.iterations, self.derivedKeyLength, function (err, derivedKey) {
+  crypto.pbkdf2(password, randomSalt, self.iterations, self.derivedKeyLength, 'sha512', function (err, derivedKey) {
     if (err) { return callback(err); }
 
     return callback(null, NodePbkdf2.serializeEncryptedPassword({ salt: randomSalt
@@ -92,7 +92,7 @@ NodePbkdf2.prototype.checkPassword = function (password, encryptedPassword, call
   if (!encryptedPassword.salt || !encryptedPassword.derivedKey || !encryptedPassword.iterations || !encryptedPassword.derivedKeyLength) { return callback("encryptedPassword doesn't have the right format"); }
 
   // Use the encrypted password's parameter to hash the candidate password
-  crypto.pbkdf2(password, encryptedPassword.salt, encryptedPassword.iterations, encryptedPassword.derivedKeyLength, function (err, derivedKey) {
+  crypto.pbkdf2(password, encryptedPassword.salt, encryptedPassword.iterations, encryptedPassword.derivedKeyLength, 'sha512', function (err, derivedKey) {
     if (err) { return callback(err); }
 
     if (new Buffer(derivedKey, 'binary').toString('base64') === encryptedPassword.derivedKey) {
